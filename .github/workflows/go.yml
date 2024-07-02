@@ -14,17 +14,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: ['1.13', '1.14']    
+        go: ['1.22.4']
     steps:
       - uses: actions/setup-go@v1
         with:
           go-version: ${{ matrix.go }}
-      
+
       - uses: actions/checkout@v2
-      
+
       - name: Build
         run: go build -v .
-        
+
       - name: Test
         env:
           IMGURCLIENTID: ${{ secrets. IMGURCLIENTID }}

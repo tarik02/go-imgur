@@ -51,6 +51,17 @@ func matchesSlice(url string, validFormats []string) bool {
 	return false
 }
 
+func extractIdFromUrl(url string) string {
+	if end := strings.LastIndex(url, "?"); end != -1 {
+		url = url[:end]
+	}
+	start := strings.LastIndex(url, "/") + 1
+	if pos := strings.LastIndex(url, "-"); pos > start {
+		start = pos + 1
+	}
+	return url[start:]
+}
+
 // GetInfoFromURL tries to query imgur based on information identified in the URL.
 // returns image/album info, status code of the request, error
 func (client *Client) GetInfoFromURL(url string) (*GenericInfo, int, error) {
@@ -102,12 +113,7 @@ func (client *Client) directImageURL(url string) (*GenericInfo, int, error) {
 func (client *Client) albumURL(url string) (*GenericInfo, int, error) {
 	var ret GenericInfo
 
-	start := strings.LastIndex(url, "/") + 1
-	end := strings.LastIndex(url, "?")
-	if end == -1 {
-		end = len(url)
-	}
-	id := url[start:end]
+	id := extractIdFromUrl(url)
 	if id == "" {
 		return nil, -1, errors.New("Could not find ID in URL " + url + ". I was going down imgur.com/a/ path.")
 	}
@@ -120,12 +126,7 @@ func (client *Client) albumURL(url string) (*GenericInfo, int, error) {
 func (client *Client) galleryURL(url string) (*GenericInfo, int, error) {
 	var ret GenericInfo
 
-	start := strings.LastIndex(url, "/") + 1
-	end := strings.LastIndex(url, "?")
-	if end == -1 {
-		end = len(url)
-	}
-	id := url[start:end]
+	id := extractIdFromUrl(url)
 	if id == "" {
 		return nil, -1, errors.New("Could not find ID in URL " + url + ". I was going down imgur.com/gallery/ path.")
 	}
@@ -145,12 +146,7 @@ func (client *Client) galleryURL(url string) (*GenericInfo, int, error) {
 func (client *Client) imageURL(url string) (*GenericInfo, int, error) {
 	var ret GenericInfo
 
-	start := strings.LastIndex(url, "/") + 1
-	end := strings.LastIndex(url, "?")
-	if end == -1 {
-		end = len(url)
-	}
-	id := url[start:end]
+	id := extractIdFromUrl(url)
 	if id == "" {
 		return nil, -1, errors.New("Could not find ID in URL " + url + ". I was going down imgur.com/ path.")
 	}
