@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"mime/multipart"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
 )
@@ -15,7 +15,9 @@ import (
 // UploadImage uploads the image to imgur
 // image                Can be a binary file, base64 data, or a URL for an image. (up to 10MB)
 // album       optional The id of the album you want to add the image to.
-//                      For anonymous albums, album should be the deletehash that is returned at creation.
+//
+//	For anonymous albums, album should be the deletehash that is returned at creation.
+//
 // dtype                The type of the file that's being sent; file, base64 or URL
 // title       optional The title of the image.
 // description optional The description of the image.
@@ -28,17 +30,20 @@ func (client *Client) UploadImage(image []byte, album string, dtype string, titl
 		return nil, -1, errors.New("Passed invalid dtype: " + dtype + ". Please use file/base64/URL.")
 	}
 
-	form := createUploadForm(image, album, dtype, title, description)
+	reqbody := &bytes.Buffer{}
+	writer := multipart.NewWriter(reqbody)
+	createUploadForm(writer, image, album, dtype, title, description)
+	writer.Close()
 
 	URL := client.createAPIURL("image")
-	req, err := http.NewRequest("POST", URL, bytes.NewBufferString(form.Encode()))
+	req, err := http.NewRequest("POST", URL, reqbody)
 	client.Log.Debugf("Posting to URL %v\n", URL)
 	if err != nil {
 		return nil, -1, errors.New("Could create request for " + URL + " - " + err.Error())
 	}
 
 	req.Header.Add("Authorization", "Client-ID "+client.imgurAccount.clientID)
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Content-Type", writer.FormDataContentType())
 	if client.rapidAPIKey != "" {
 		req.Header.Add("X-RapidAPI-Key", client.rapidAPIKey)
 	}
@@ -50,7 +55,7 @@ func (client *Client) UploadImage(image []byte, album string, dtype string, titl
 	defer res.Body.Close()
 
 	// Read the whole body
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, -1, errors.New("Problem reading the body of " + URL + " - " + err.Error())
 	}
@@ -72,23 +77,22 @@ func (client *Client) UploadImage(image []byte, album string, dtype string, titl
 	return img.Ii, img.Status, nil
 }
 
-func createUploadForm(image []byte, album string, dtype string, title string, description string) url.Values {
-	form := url.Values{}
+func createUploadForm(writer *multipart.Writer, image []byte, album string, dtype string, title string, description string) {
+	part, _ := writer.CreateFormFile("image", "image")
+	_, _ = part.Write(image)
 
-	form.Add("image", string(image[:]))
-	form.Add("type", dtype)
+	_ = writer.WriteField("image", string(image[:]))
+	_ = writer.WriteField("type", dtype)
 
 	if album != "" {
-		form.Add("album", album)
+		_ = writer.WriteField("album", album)
 	}
 	if title != "" {
-		form.Add("title", title)
+		_ = writer.WriteField("title", title)
 	}
 	if description != "" {
-		form.Add("description", description)
+		_ = writer.WriteField("description", description)
 	}
-
-	return form
 }
 
 // UploadImageFromFile uploads a file given by the filename string to imgur.

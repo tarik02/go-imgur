@@ -13,7 +13,7 @@ func TestGetFromURLAlbumSimulated(t *testing.T) {
 	defer server.Close()
 
 	client, _ := NewClient(httpC, "testing", "")
-	ge, status, err := client.GetInfoFromURL("https://imgur.com/a/VZQXk")
+	ge, status, err := client.GetInfoFromURL("https://imgur.com/a/gianluca-giminis-bikes-VZQXk")
 	if err != nil {
 		t.Errorf("GetInfoFromURL() failed with error: %v", err)
 		t.FailNow()
@@ -68,8 +68,8 @@ func TestGetFromURLAlbumReal(t *testing.T) {
 	}
 
 	TEST_URLS := []string{
-		"https://imgur.com/a/VZQXk",
-		"https://imgur.io/a/VZQXk",
+		"https://imgur.com/a/gianluca-giminis-bikes-VZQXk",
+		"https://imgur.io/a/gianluca-giminis-bikes-VZQXk",
 	}
 
 	for _, url := range TEST_URLS {
@@ -130,7 +130,7 @@ func TestGetFromURLGAlbumSimulated(t *testing.T) {
 	defer server.Close()
 
 	client, _ := NewClient(httpC, "testing", "")
-	ge, status, err := client.GetInfoFromURL("https://imgur.com/gallery/VZQXk")
+	ge, status, err := client.GetInfoFromURL("https://imgur.com/gallery/as-turns-out-most-people-cannot-draw-bike-VZQXk")
 	if err != nil {
 		t.Errorf("GetInfoFromURL() failed with error: %v", err)
 		t.FailNow()
@@ -166,7 +166,7 @@ func TestGetFromURLGAlbumReal(t *testing.T) {
 		expected   map[string]interface{}
 	}{
 		{
-			galleryURL: "https://imgur.com/gallery/VZQXk",
+			galleryURL: "https://imgur.com/gallery/as-turns-out-most-people-cannot-draw-bike-VZQXk",
 			expected: map[string]interface{}{
 				"title":        "As it turns out, most people cannot draw a bike.",
 				"cover":        "CJCA0gW",
@@ -178,7 +178,7 @@ func TestGetFromURLGAlbumReal(t *testing.T) {
 			},
 		},
 		{
-			galleryURL: "https://imgur.com/gallery/t6l1GiW",
+			galleryURL: "https://imgur.com/gallery/funny-random-meme-twitter-dump-t6l1GiW",
 			expected: map[string]interface{}{
 				"title":        "Funny Random Meme and Twitter Dump",
 				"cover":        "60wTouU",
@@ -190,7 +190,7 @@ func TestGetFromURLGAlbumReal(t *testing.T) {
 			},
 		},
 		{
-			galleryURL: "https://imgur.io/gallery/VZQXk",
+			galleryURL: "https://imgur.io/gallery/as-turns-out-most-people-cannot-draw-bike-VZQXk",
 			expected: map[string]interface{}{
 				"title":        "As it turns out, most people cannot draw a bike.",
 				"cover":        "CJCA0gW",
@@ -202,7 +202,7 @@ func TestGetFromURLGAlbumReal(t *testing.T) {
 			},
 		},
 		{
-			galleryURL: "https://imgur.io/gallery/t6l1GiW",
+			galleryURL: "https://imgur.io/gallery/funny-random-meme-twitter-dump-t6l1GiW",
 			expected: map[string]interface{}{
 				"title":        "Funny Random Meme and Twitter Dump",
 				"cover":        "60wTouU",
@@ -292,8 +292,8 @@ func TestGetURLGalleryImageReal(t *testing.T) {
 	}
 
 	TEST_URLS := []string{
-		"https://imgur.com/gallery/uPI76jY",
-		"https://imgur.io/gallery/uPI76jY",
+		"https://imgur.com/gallery/abandoned-chinese-fishing-village-uPI76jY",
+		"https://imgur.io/gallery/abandoned-chinese-fishing-village-uPI76jY",
 	}
 
 	for _, url := range TEST_URLS {
