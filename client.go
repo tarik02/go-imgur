@@ -24,7 +24,10 @@ type Client struct {
 // NewClient simply creates an imgur client. RapidAPIKEY is "" if you are using the free API.
 func NewClient(httpClient *http.Client, clientID string, rapidAPIKey string) (*Client, error) {
 	logger := new(klogger.CLILogger)
+	return NewClientWithLogger(logger, httpClient, clientID, rapidAPIKey)
+}
 
+func NewClientWithLogger(logger klogger.KLogger, httpClient *http.Client, clientID string, rapidAPIKey string) (*Client, error) {
 	if len(clientID) == 0 {
 		msg := "imgur client ID is empty"
 		logger.Errorf(msg)
